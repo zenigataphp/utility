@@ -27,7 +27,7 @@ final class FakeLoggerTest extends TestCase
     {
         $logger = new FakeLogger();
 
-        $this->assertEmpty($logger->output);
+        $this->assertEmpty($logger->all());
     }
 
     public function testLogMessageToOutput(): void
@@ -35,10 +35,12 @@ final class FakeLoggerTest extends TestCase
         $logger = new FakeLogger();
         $logger->info('info message', ['foo' => 'bar']);
 
-        $this->assertCount(1, $logger->output);
-        $this->assertStringContainsString('[INFO]', $logger->output[0]);
-        $this->assertStringContainsString('info message', $logger->output[0]);
-        $this->assertStringContainsString('"foo":"bar"', $logger->output[0]);
+        $output = $logger->all();
+
+        $this->assertCount(1, $output);
+        $this->assertStringContainsString('[INFO]', $output[0]);
+        $this->assertStringContainsString('info message', $output[0]);
+        $this->assertStringContainsString('"foo":"bar"', $output[0]);
     }
 
     public function testLogMultipleLevels(): void
@@ -47,8 +49,10 @@ final class FakeLoggerTest extends TestCase
         $logger->debug('debug message');
         $logger->warning('warning message');
 
-        $this->assertStringContainsString('[DEBUG]', $logger->output[0]);
-        $this->assertStringContainsString('[WARNING]', $logger->output[1]);
+        $output = $logger->all();
+
+        $this->assertStringContainsString('[DEBUG]', $output[0]);
+        $this->assertStringContainsString('[WARNING]', $output[1]);
     }
 
     public function testLogStringableObject(): void
@@ -63,7 +67,7 @@ final class FakeLoggerTest extends TestCase
         $logger = new FakeLogger();
         $logger->error($message);
 
-        $this->assertStringContainsString('stringable message', $logger->output[0]);
+        $this->assertStringContainsString('stringable message', $logger->all()[0]);
     }
 
     public function testLogWithEmptyContext(): void
@@ -71,7 +75,9 @@ final class FakeLoggerTest extends TestCase
         $logger = new FakeLogger();
         $logger->alert('alert with no context', []);
 
-        $this->assertStringContainsString('[ALERT]', $logger->output[0]);
-        $this->assertStringContainsString('[]', $logger->output[0]);
+        $output = $logger->all();
+
+        $this->assertStringContainsString('[ALERT]', $output[0]);
+        $this->assertStringContainsString('[]', $output[0]);
     }
 }

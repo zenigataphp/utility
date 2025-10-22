@@ -20,6 +20,7 @@ use Zenigata\Utility\Psr\FakeContainer;
  * - Throw a {@see NotFoundExceptionInterface} when a service is missing.
  * - Throw if initialized injecting a non associative array of entries.
  * - Correctly handle `null` as a stored value.
+ * - Has and set methods.
  */
 #[CoversClass(FakeContainer::class)]
 final class FakeContainerTest extends TestCase
@@ -28,7 +29,7 @@ final class FakeContainerTest extends TestCase
     {
         $container = new FakeContainer();
 
-        $this->assertEmpty($container->entries);
+        $this->assertEmpty($container->all());
     }
 
     public function testReturnServiceIfExists(): void
@@ -56,18 +57,6 @@ final class FakeContainerTest extends TestCase
         new FakeContainer(['foo', 'bar']);
     }
 
-    public function testHasDetectsService(): void
-    {
-        $container = new FakeContainer();
-
-        $this->assertFalse($container->has('service'));
-
-        $container->entries['service'] = 42;
-
-        $this->assertTrue($container->has('service'));
-        $this->assertFalse($container->has('missing'));
-    }
-
     public function testNullServiceIsValid(): void
     {
         $this->expectException(NotFoundExceptionInterface::class);
@@ -77,5 +66,21 @@ final class FakeContainerTest extends TestCase
         $this->assertFalse($container->has('nullable'));
 
         $container->get('nullable');
+    }
+
+    public function testHasService(): void
+    {
+        $container = new FakeContainer();
+
+        $this->assertFalse($container->has('service'));
+    }
+
+    public function testSetService(): void
+    {
+        $container = new FakeContainer();
+        $container->set('service', 42);
+
+        $this->assertTrue($container->has('service'));
+        $this->assertCount(1, $container->all());
     }
 }
