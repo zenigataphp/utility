@@ -1,0 +1,27 @@
+version: 2
+
+updates:
+  - package-ecosystem: "composer"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+    open-pull-requests-limit: 5
+
+    ignore:
+      - dependency-name: "*"
+        update-types:
+          - version-update:semver-major
+
+    groups:
+      minor-and-patch:
+        patterns: 
+          - "*"
+        update-types:
+          - "minor"
+          - "patch"
+          
+    cooldown:
+      default-days: 3
+      semver-minor-days: 7
+      semver-patch-days: 3
+      semver-major-days: 30 # Ignored
