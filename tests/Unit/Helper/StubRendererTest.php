@@ -2,14 +2,14 @@
 
 declare(strict_types=1);
 
-namespace Zenigata\Utility\Test\Unit;
+namespace Zenigata\Utility\Test\Unit\Helper;
 
 use RuntimeException;
 use org\bovigo\vfs\vfsStream;
 use org\bovigo\vfs\vfsStreamDirectory;
 use PHPUnit\Framework\TestCase;
 use PHPUnit\Framework\Attributes\CoversClass;
-use Zenigata\Utility\StubRenderer;
+use Zenigata\Utility\Helper\StubRenderer;
 
 use function file_get_contents;
 

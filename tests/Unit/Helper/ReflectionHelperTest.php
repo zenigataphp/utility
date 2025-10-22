@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace Zenigata\Utility\Test\Unit;
+namespace Zenigata\Utility\Test\Unit\Helper;
 
 use RuntimeException;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\TestCase;
-use Zenigata\Utility\ReflectionHelper;
+use Zenigata\Utility\Helper\ReflectionHelper;
 use Zenigata\Utility\Test\AbstractClass;
 use Zenigata\Utility\Test\InstantiableClass;
 use Zenigata\Utility\Test\NonInstantiableClass;
