@@ -23,7 +23,7 @@ class FakeLogger extends AbstractLogger
      *
      * @var string[]
      */
-    public array $output = [];
+    public array $messages = [];
 
     /**
      * Simulates logging a message.
@@ -36,11 +36,21 @@ class FakeLogger extends AbstractLogger
      */
     public function log($level, string|Stringable $message, array $context = []): void
     {
-        $this->output[] = sprintf(
+        $this->messages[] = sprintf(
             "[%s] %s %s",
             strtoupper($level),
             (string) $message,
             json_encode($context)
         );
+    }
+
+    /**
+     * Returns the logged messages.
+     * 
+     * @var string[]
+     */
+    public function all(): array
+    {
+        return $this->messages;
     }
 }

@@ -20,16 +20,16 @@ use function sprintf;
 class FakeContainer implements ContainerInterface
 {
     /**
-     * Stack of entries, stored as key-value map of IDs to services.
+     * Stack of entries, stored as key-value map of identifiers to services.
      * 
      * @var array<string,mixed>
      */
-    public array $entries = [];
+    private array $entries = [];
 
     /**
      * Creates a new fake container instance.
      *
-     * @param array<string,mixed> $entries Associative array mapping service IDs to instances/values.
+     * @param array<string,mixed> $entries Associative array mapping identifiers to services.
      * 
      * @throws LogicException If entries are not set as associative array.
      */
@@ -63,5 +63,28 @@ class FakeContainer implements ContainerInterface
     public function has(string $id): bool
     {
         return isset($this->entries[$id]);
+    }
+
+    /**
+     * Registers a service with an identifier.
+     *
+     * @param string $id
+     * @param mixed  $value
+     * 
+     * @return void
+     */
+    public function set(string $id, mixed $value): void
+    {
+        $this->entries[$id] = $value;
+    }
+
+    /**
+     * Returns the registered services.
+     * 
+     * @var array<string,mixed>
+     */
+    public function all(): array
+    {
+        return $this->entries;
     }
 }
