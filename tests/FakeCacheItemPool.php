@@ -9,7 +9,7 @@ use Psr\Cache\CacheItemPoolInterface;
 
 /**
  * Fake implementation of {@see CacheItemPoolInterface} (PSR-6).
- *
+
  * Provides an in-memory simulation of a PSR-6 cache backend.
  */
 class FakeCacheItemPool implements CacheItemPoolInterface
