@@ -1,0 +1,40 @@
+{
+    "name": "zenigata/utility",
+    "type": "library",
+    "license": "MIT",
+    "prefer-stable": true,
+    "authors": [
+        {
+            "name": "Ilario Promutico"
+        }
+    ],
+    "autoload": {
+        "psr-4": {
+            "Zenigata\\Utility\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Zenigata\\Utility\\Test\\": "tests/"
+        }
+    },
+    "require": {
+        "php": "^8.2 || ^8.3 || ^8.4",
+        "psr/cache": "^3.0",
+        "psr/container": "^2.0",
+        "psr/simple-cache": "^3.0"
+    },
+    "require-dev": {
+        "mikey179/vfsstream": "^1.6",
+        "phpstan/phpstan": "^2.1",
+        "phpunit/phpunit": "^11.5 || ^12.0"
+    },
+    "scripts": {
+        "stan": "vendor/bin/phpstan analyse src tests --memory-limit=512M",
+        "unit": "phpunit --configuration phpunit.xml --testdox",
+        "test": [
+            "@stan",
+            "@unit"
+        ]
+    }
+}
