@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Zenigata\Utility;
+namespace Zenigata\Utility\Helper;
 
 use Psr\Cache\CacheItemPoolInterface;
 use Psr\SimpleCache\CacheInterface;
