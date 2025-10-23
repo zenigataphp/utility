@@ -4,9 +4,10 @@ declare(strict_types=1);
 
 namespace Zenigata\Utility\Test\Unit\Psr;
 
+use RuntimeException;
+use SplStack;
 use Nyholm\Psr7\Response;
 use Nyholm\Psr7\ServerRequest;
-use RuntimeException;
 use PHPUnit\Framework\TestCase;
 use PHPUnit\Framework\Attributes\CoversClass;
 use Psr\Http\Message\ResponseInterface;
@@ -20,9 +21,10 @@ use Zenigata\Utility\Psr\FakeRequestHandler;
  * Covered cases:
  *
  * - Default state.
- * - Return a default fake response when no custom response is provided.
  * - Return a custom response when injected via the constructor.
  * - Throw a preconfigured exception instead of returning a response.
+ * - Push its name into the provided invocation stack.
+ * - Capture request during the process.
  */
 #[CoversClass(FakeRequestHandler::class)]
 final class FakeRequestHandlerTest extends TestCase
@@ -80,5 +82,30 @@ final class FakeRequestHandlerTest extends TestCase
         );
 
         $handler->handle($this->request);
+    }
+
+    public function testPushNameIntoInvokeStack(): void
+    {
+        $stack = new SplStack();
+
+        $handler = new FakeRequestHandler(
+            response:    $this->response,
+            invokeStack: $stack,
+            name:        'foo'
+        );
+
+        $handler->handle($this->request);
+
+        $this->assertFalse($stack->isEmpty());
+        $this->assertSame('foo', $stack->top());
+    }
+
+    public function testCaptureRequestAndHandler(): void
+    {
+        $handler = new FakeRequestHandler($this->response);
+
+        $handler->handle($this->request);
+
+        $this->assertSame($this->request, $handler->getRequest());
     }
 }

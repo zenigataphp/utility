@@ -4,9 +4,10 @@ declare(strict_types=1);
 
 namespace Zenigata\Utility\Test\Unit\Psr;
 
+use RuntimeException;
+use SplStack;
 use Nyholm\Psr7\Response;
 use Nyholm\Psr7\ServerRequest;
-use RuntimeException;
 use PHPUnit\Framework\TestCase;
 use PHPUnit\Framework\Attributes\CoversClass;
 use Psr\Http\Message\ResponseInterface;
@@ -22,9 +23,10 @@ use Zenigata\Utility\Psr\FakeRequestHandler;
  *
  * - Default state.
  * - Delegation of request processing to the provided request handler.
- * - Return a default fake response when no custom response is provided.
  * - Return a custom response when injected via the constructor.
  * - Throw a preconfigured exception instead of returning a response.
+ * - Push its name into the provided invocation stack.
+ * - Capture request and handler during the process.
  */
 #[CoversClass(FakeMiddleware::class)]
 final class FakeMiddlewareTest extends TestCase
@@ -99,8 +101,29 @@ final class FakeMiddlewareTest extends TestCase
         $this->expectException(RuntimeException::class);
         $this->expectExceptionMessage('Custom exception');
 
-        $handler = new FakeMiddleware(exception: new RuntimeException('Custom exception'));
+        $middleware = new FakeMiddleware(exception: new RuntimeException('Custom exception'));
 
-        $handler->process($this->request, $this->handler);
+        $middleware->process($this->request, $this->handler);
+    }
+
+    public function testPushNameIntoInvokeStack(): void
+    {
+        $stack = new SplStack();
+
+        $middleware = new FakeMiddleware(invokeStack: $stack, name: 'foo');
+        $middleware->process($this->request, $this->handler);
+
+        $this->assertFalse($stack->isEmpty());
+        $this->assertSame('foo', $stack->top());
+    }
+
+    public function testCaptureRequestAndHandler(): void
+    {
+        $middleware = new FakeMiddleware();
+
+        $middleware->process($this->request, $this->handler);
+
+        $this->assertSame($this->request, $middleware->getRequest());
+        $this->assertSame($this->handler, $middleware->getHandler());
     }
 }
