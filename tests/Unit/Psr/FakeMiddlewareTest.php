@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Zenigata\Utility\Test\Unit\Psr;
 
 use RuntimeException;
-use SplStack;
 use Nyholm\Psr7\Response;
 use Nyholm\Psr7\ServerRequest;
 use PHPUnit\Framework\TestCase;
@@ -25,8 +24,7 @@ use Zenigata\Utility\Psr\FakeRequestHandler;
  * - Delegation of request processing to the provided request handler.
  * - Return a custom response when injected via the constructor.
  * - Throw a preconfigured exception instead of returning a response.
- * - Push its name into the provided invocation stack.
- * - Capture request and handler during the process.
+ * - Invoke a custom callback during the process.
  */
 #[CoversClass(FakeMiddleware::class)]
 final class FakeMiddlewareTest extends TestCase
@@ -52,17 +50,23 @@ final class FakeMiddlewareTest extends TestCase
         $middleware = new FakeMiddleware();
 
         $this->assertInstanceOf(MiddlewareInterface::class, $middleware);
-        $this->assertSame('middleware', $middleware->getName());
-        $this->assertNull($middleware->getRequest());
-        $this->assertNull($middleware->getHandler());
     }
 
     public function testPassRequestToNextHandler(): void
     {
-        $middleware = new FakeMiddleware();
-        $middleware->process($this->request, $this->handler);
+        $captured = null;
 
-        $this->assertSame($this->request, $this->handler->getRequest());
+        $handler = new FakeRequestHandler(
+            response: $this->response,
+            callable: function ($request) use (&$captured) {
+                $captured = $request;
+            }
+        );
+
+        $middleware = new FakeMiddleware();
+        $middleware->process($this->request, $handler);
+
+        $this->assertSame($this->request, $captured);
     }
 
     public function testReturnResponseInterface(): void
@@ -106,24 +110,24 @@ final class FakeMiddlewareTest extends TestCase
         $middleware->process($this->request, $this->handler);
     }
 
-    public function testPushNameIntoInvokeStack(): void
+    public function testInvokeCallback(): void
     {
-        $stack = new SplStack();
+        $requests = [];
+        $handlers = [];
 
-        $middleware = new FakeMiddleware(invokeStack: $stack, name: 'foo');
+        $middleware = new FakeMiddleware(
+            response: $this->response,
+            callable: function ($request, $handler) use (&$requests, &$handlers) {
+                $requests[] = $request;
+                $handlers[] = $handler;
+            }
+        );
+        
         $middleware->process($this->request, $this->handler);
 
-        $this->assertFalse($stack->isEmpty());
-        $this->assertSame('foo', $stack->top());
-    }
-
-    public function testCaptureRequestAndHandler(): void
-    {
-        $middleware = new FakeMiddleware();
-
-        $middleware->process($this->request, $this->handler);
-
-        $this->assertSame($this->request, $middleware->getRequest());
-        $this->assertSame($this->handler, $middleware->getHandler());
+        $this->assertNotEmpty($requests);
+        $this->assertNotEmpty($handlers);
+        $this->assertSame($this->request, $requests[0]);
+        $this->assertSame($this->handler, $handlers[0]);
     }
 }

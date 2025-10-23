@@ -21,10 +21,9 @@ use Zenigata\Utility\Psr\FakeRequestHandler;
  * Covered cases:
  *
  * - Default state.
- * - Return a custom response when injected via the constructor.
+ * - Return a preconfigured response.
  * - Throw a preconfigured exception instead of returning a response.
- * - Push its name into the provided invocation stack.
- * - Capture request during the process.
+ * - Invoke a custom callback during the process.
  */
 #[CoversClass(FakeRequestHandler::class)]
 final class FakeRequestHandlerTest extends TestCase
@@ -47,8 +46,6 @@ final class FakeRequestHandlerTest extends TestCase
         $handler = new FakeRequestHandler($this->response);
 
         $this->assertInstanceOf(RequestHandlerInterface::class, $handler);
-        $this->assertSame('handler', $handler->getName());
-        $this->assertNull($handler->getRequest());
     }
 
     public function testReturnResponse(): void
@@ -59,16 +56,6 @@ final class FakeRequestHandlerTest extends TestCase
 
         $this->assertInstanceOf(ResponseInterface::class, $response);
         $this->assertSame(200, $response->getStatusCode());
-    }
-
-    public function testReturnCustomResponseIfProvided(): void
-    {
-        $initialResponse = new Response();
-        $handler = new FakeRequestHandler($initialResponse);
-
-        $response = $handler->handle($this->request);
-
-        $this->assertSame($initialResponse, $response);
     }
 
     public function testThrowExceptionIfProvided(): void
@@ -84,28 +71,20 @@ final class FakeRequestHandlerTest extends TestCase
         $handler->handle($this->request);
     }
 
-    public function testPushNameIntoInvokeStack(): void
+    public function testInvokeCallback(): void
     {
-        $stack = new SplStack();
+        $requests = [];
 
         $handler = new FakeRequestHandler(
-            response:    $this->response,
-            invokeStack: $stack,
-            name:        'foo'
+            response: $this->response,
+            callable: function ($request) use (&$requests) {
+                $requests[] = $request;
+            }
         );
-
+        
         $handler->handle($this->request);
 
-        $this->assertFalse($stack->isEmpty());
-        $this->assertSame('foo', $stack->top());
-    }
-
-    public function testCaptureRequestAndHandler(): void
-    {
-        $handler = new FakeRequestHandler($this->response);
-
-        $handler->handle($this->request);
-
-        $this->assertSame($this->request, $handler->getRequest());
+        $this->assertNotEmpty($requests);
+        $this->assertSame($this->request, $requests[0]);
     }
 }
