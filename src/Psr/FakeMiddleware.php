@@ -41,7 +41,7 @@ class FakeMiddleware implements MiddlewareInterface
         private ?ResponseInterface $response = null,
         private ?Throwable $exception = null,
         private ?SplStack $invokeStack = null,
-        public string $name = 'middleware',
+        private string $name = 'middleware',
     ) {}
 
     /**
