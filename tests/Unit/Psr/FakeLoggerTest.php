@@ -18,7 +18,7 @@ use Zenigata\Utility\Psr\FakeLogger;
  * - Log messages at various levels with string and {@see Stringable} inputs.
  * - Format log entries with level, message, and context data.
  * - Handle empty context arrays.
- * - Track logged messages through the output stack.
+ * - Track recorded messages.
  */
 #[CoversClass(FakeLogger::class)]
 final class FakeLoggerTest extends TestCase
@@ -35,12 +35,12 @@ final class FakeLoggerTest extends TestCase
         $logger = new FakeLogger();
         $logger->info('info message', ['foo' => 'bar']);
 
-        $output = $logger->all();
+        $logs = $logger->all();
 
-        $this->assertCount(1, $output);
-        $this->assertStringContainsString('[INFO]', $output[0]);
-        $this->assertStringContainsString('info message', $output[0]);
-        $this->assertStringContainsString('"foo":"bar"', $output[0]);
+        $this->assertCount(1, $logs);
+        $this->assertStringContainsString('[INFO]', $logs[0]);
+        $this->assertStringContainsString('info message', $logs[0]);
+        $this->assertStringContainsString('"foo":"bar"', $logs[0]);
     }
 
     public function testLogMultipleLevels(): void
@@ -49,10 +49,10 @@ final class FakeLoggerTest extends TestCase
         $logger->debug('debug message');
         $logger->warning('warning message');
 
-        $output = $logger->all();
+        $logs = $logger->all();
 
-        $this->assertStringContainsString('[DEBUG]', $output[0]);
-        $this->assertStringContainsString('[WARNING]', $output[1]);
+        $this->assertStringContainsString('[DEBUG]', $logs[0]);
+        $this->assertStringContainsString('[WARNING]', $logs[1]);
     }
 
     public function testLogStringableObject(): void
@@ -75,9 +75,9 @@ final class FakeLoggerTest extends TestCase
         $logger = new FakeLogger();
         $logger->alert('alert with no context', []);
 
-        $output = $logger->all();
+        $logs = $logger->all();
 
-        $this->assertStringContainsString('[ALERT]', $output[0]);
-        $this->assertStringContainsString('[]', $output[0]);
+        $this->assertStringContainsString('[ALERT]', $logs[0]);
+        $this->assertStringContainsString('[]', $logs[0]);
     }
 }
