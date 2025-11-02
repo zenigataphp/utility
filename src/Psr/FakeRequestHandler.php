@@ -10,7 +10,7 @@ use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\RequestHandlerInterface;
 
 /**
- * Fake implementation of {@see RequestHandlerInterface} (PSR-15).
+ * Fake implementation of {@see Psr\Http\Server\RequestHandlerInterface} (PSR-15).
  *
  * Configurable request handler for testing.
  */

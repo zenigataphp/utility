@@ -12,7 +12,7 @@ use function sprintf;
 use function strtoupper;
 
 /**
- * Fake implementation of {@see LoggerInterface} (PSR-3).
+ * Fake implementation of {@see Psr\Log\LoggerInterface} (PSR-3).
  *
  * Provides an in-memory simulation of a PSR-3 logging backend.
  */

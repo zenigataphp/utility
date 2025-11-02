@@ -13,7 +13,7 @@ use function array_is_list;
 use function sprintf;
 
 /**
- * Fake implementation of {@see ContainerInterface} (PSR-11).
+ * Fake implementation of {@see Psr\Container\ContainerInterface} (PSR-11).
  *
  * Provides an in-memory simulation of a PSR-11 container.
  */

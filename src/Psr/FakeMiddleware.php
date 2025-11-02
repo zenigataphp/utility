@@ -11,7 +11,7 @@ use Psr\Http\Server\MiddlewareInterface;
 use Psr\Http\Server\RequestHandlerInterface;
 
 /**
- * Fake implementation of {@see MiddlewareInterface} (PSR-15).
+ * Fake implementation of {@see Psr\Http\Server\MiddlewareInterface} (PSR-15).
  *
  * Configurable middleware for testing.
  */
