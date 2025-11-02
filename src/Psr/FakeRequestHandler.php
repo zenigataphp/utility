@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Zenigata\Utility\Psr;
 
-use Throwable;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\RequestHandlerInterface;
@@ -28,12 +27,10 @@ class FakeRequestHandler implements RequestHandlerInterface
      *
      * @param ResponseInterface $response  The response to return when handling a request.
      * @param callable|null     $callable  Optional callback invoked during processing.
-     * @param Throwable|null    $exception Optional exception to throw instead of returning a response.
      */
     public function __construct(
         private ResponseInterface $response,
         ?callable $callable = null,
-        private ?Throwable $exception = null,
     ) {
         $this->callable = $callable;
     }
@@ -41,20 +38,14 @@ class FakeRequestHandler implements RequestHandlerInterface
     /**
      * @inheritDoc
      * 
-     * Invokes the callback if provided, and optionally returns or throws
-     * the configured response/exception.
+     * Invokes the callback during the process, if provided.
      *
      * @return ResponseInterface The response configured in the constructor.
-     * @throws Throwable If a throwable was configured in the constructor.
      */
     public function handle(ServerRequestInterface $request): ResponseInterface
     {
         if ($this->callable !== null) {
             ($this->callable)($request);
-        }
-
-        if ($this->exception !== null) {
-            throw $this->exception;
         }
 
         return $this->response;
