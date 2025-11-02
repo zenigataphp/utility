@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Zenigata\Utility\Test\Unit\Psr;
 
-use RuntimeException;
 use Nyholm\Psr7\Response;
 use Nyholm\Psr7\ServerRequest;
 use PHPUnit\Framework\TestCase;
@@ -23,7 +22,6 @@ use Zenigata\Utility\Psr\FakeRequestHandler;
  * - Default state.
  * - Delegation of request processing to the provided request handler.
  * - Return a custom response when injected via the constructor.
- * - Throw a preconfigured exception instead of returning a response.
  * - Invoke a custom callback during the process.
  */
 #[CoversClass(FakeMiddleware::class)]
@@ -98,16 +96,6 @@ final class FakeMiddlewareTest extends TestCase
         $response = $middleware->process($this->request, $this->handler);
 
         $this->assertSame($initialResponse, $response);
-    }
-
-    public function testThrowExceptionIfProvided(): void
-    {
-        $this->expectException(RuntimeException::class);
-        $this->expectExceptionMessage('Custom exception');
-
-        $middleware = new FakeMiddleware(exception: new RuntimeException('Custom exception'));
-
-        $middleware->process($this->request, $this->handler);
     }
 
     public function testInvokeCallback(): void

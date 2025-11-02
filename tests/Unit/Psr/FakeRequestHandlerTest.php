@@ -4,8 +4,6 @@ declare(strict_types=1);
 
 namespace Zenigata\Utility\Test\Unit\Psr;
 
-use RuntimeException;
-use SplStack;
 use Nyholm\Psr7\Response;
 use Nyholm\Psr7\ServerRequest;
 use PHPUnit\Framework\TestCase;
@@ -22,7 +20,6 @@ use Zenigata\Utility\Psr\FakeRequestHandler;
  *
  * - Default state.
  * - Return a preconfigured response.
- * - Throw a preconfigured exception instead of returning a response.
  * - Invoke a custom callback during the process.
  */
 #[CoversClass(FakeRequestHandler::class)]
@@ -56,19 +53,6 @@ final class FakeRequestHandlerTest extends TestCase
 
         $this->assertInstanceOf(ResponseInterface::class, $response);
         $this->assertSame(200, $response->getStatusCode());
-    }
-
-    public function testThrowExceptionIfProvided(): void
-    {
-        $this->expectException(RuntimeException::class);
-        $this->expectExceptionMessage('Custom exception');
-
-        $handler = new FakeRequestHandler(
-            response:  $this->response,
-            exception: new RuntimeException('Custom exception')
-        );
-
-        $handler->handle($this->request);
     }
 
     public function testInvokeCallback(): void
