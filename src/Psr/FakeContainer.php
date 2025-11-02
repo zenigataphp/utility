@@ -46,7 +46,7 @@ class FakeContainer implements ContainerInterface
     }
 
     /**
-     * {@inheritDoc}
+     * @inheritDoc
      */
     public function get(string $id): mixed
     {
@@ -58,7 +58,7 @@ class FakeContainer implements ContainerInterface
     }
 
     /**
-     * {@inheritDoc}
+     * @inheritDoc
      */
     public function has(string $id): bool
     {

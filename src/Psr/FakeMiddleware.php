@@ -40,7 +40,7 @@ class FakeMiddleware implements MiddlewareInterface
     }
 
     /**
-     * {@inheritDoc}
+     * @inheritDoc
      * 
      * Invokes the callback if provided, and optionally returns or throws
      * the configured response/exception.

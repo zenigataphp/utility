@@ -33,7 +33,7 @@ final class CacheHelperTest extends TestCase
     private CacheInterface $psr16;
 
     /**
-     * {@inheritDoc}
+     * @inheritDoc
      */
     protected function setUp(): void
     {

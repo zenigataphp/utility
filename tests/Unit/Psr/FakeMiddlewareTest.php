@@ -36,7 +36,7 @@ final class FakeMiddlewareTest extends TestCase
     private FakeRequestHandler $handler;
 
     /**
-     * {@inheritDoc}
+     * @inheritDoc
      */
     protected function setUp(): void
     {

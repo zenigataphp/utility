@@ -33,7 +33,7 @@ final class FakeRequestHandlerTest extends TestCase
     private ResponseInterface $response;
 
     /**
-     * {@inheritDoc}
+     * @inheritDoc
      */
     protected function setUp(): void
     {

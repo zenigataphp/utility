@@ -33,7 +33,7 @@ final class StubRendererTest extends TestCase
     private vfsStreamDirectory $root;
 
     /**
-     * {@inheritDoc}
+     * @inheritDoc
      */
     protected function setUp(): void
     {

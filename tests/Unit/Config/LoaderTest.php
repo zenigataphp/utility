@@ -38,7 +38,7 @@ final class LoaderTest extends TestCase
     private array $files;
 
     /**
-     * {@inheritDoc}
+     * @inheritDoc
      */
     protected function setUp(): void
     {
