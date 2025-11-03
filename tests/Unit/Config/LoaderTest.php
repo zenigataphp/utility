@@ -21,7 +21,7 @@ use function var_export;
  * 
  * - Load configuration from single or multiple files.
  * - Support for grouped configurations using labels.
- * - Provide array-like interface (Countable, toArray).
+ * - Provide lazy loading of configuration data.
  * - Throw when label does not exist.
  * - Throw when file does not exist or is not readable.
  */
@@ -71,7 +71,6 @@ final class LoaderTest extends TestCase
         $result = $loader->load();
         $values = $result->toArray();
 
-        $this->assertCount(1, $result);
         $this->assertCount(1, $values);
         $this->assertSame(['db' => 'mysql'], $values[0]);
     }
@@ -88,7 +87,6 @@ final class LoaderTest extends TestCase
         $result = $loader->load('config');
         $values = $result->toArray();
 
-        $this->assertCount(2, $result);
         $this->assertCount(2, $values);
         $this->assertSame(['db' => 'mysql'], $values[0]);
         $this->assertSame(['cache' => 'redis'], $values[1]);
