@@ -7,16 +7,17 @@ namespace Zenigata\Utility\Config;
 use IteratorAggregate;
 
 /**
- * Represents an iterable, array-like collection.
+ * Defines a generic iterable collection contract.
  *
- * Provides countability and a method to convert all items into an array.
+ * Ensures a consistent interface for objects that can be iterated
+ * and fully converted into an array.
  */
 interface IterableInterface extends IteratorAggregate
 {
     /**
-     * Converts the collection into a plain array.
+     * Converts the iterable content into an array.
      *
-     * @return array<int,mixed> Collected items.
+     * @return array<int,mixed> All collected items.
      */
     public function toArray(): array;
 }
