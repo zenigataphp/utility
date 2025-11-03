@@ -4,15 +4,11 @@ declare(strict_types=1);
 
 namespace Zenigata\Utility\Config;
 
-use Countable;
-use Generator;
-use IteratorAggregate;
 use RuntimeException;
+use Traversable;
 
-use function count;
 use function is_file;
 use function is_readable;
-use function iterator_to_array;
 
 /**
  * Memory-efficient configuration loader.
@@ -43,17 +39,12 @@ final class Loader
     {
         $paths = $this->resolvePaths($label);
 
-        return new class($paths) implements Countable, IteratorAggregate {
+        return new class($paths) extends AbstractIterable {
             public function __construct(
                 private array $paths
             ) {}
 
-            public function count(): int
-            {
-                return count($this->paths);
-            }
-
-            public function getIterator(): Generator
+            public function getIterator(): Traversable
             {
                 foreach ($this->paths as $path) {
                     if (!is_file($path) || !is_readable($path)) {
@@ -62,11 +53,6 @@ final class Loader
 
                     yield require $path;
                 }
-            }
-
-            public function toArray(): array
-            {
-                return iterator_to_array($this->getIterator(), false);
             }
         };
     }
