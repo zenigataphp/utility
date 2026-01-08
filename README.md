@@ -1,6 +1,8 @@
 # Zenigata Utility
 
-A lightweight collection of PHP utility classes to simplify common development tasks.
+> ⚠️ This project is in an early development stage. Feedback and contributions are welcome!
+
+Lightweight collection of PHP utility classes to simplify common development tasks.
 Currently includes helpers for **cache interaction**, **container resolution**, and **stub file generation**.
 
 ## Features
