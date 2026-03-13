@@ -2,31 +2,31 @@
 
 declare(strict_types=1);
 
-namespace Zenigata\Utility\Test\Unit\Config;
+namespace Zenigata\Utility\Test\Unit\Helper;
 
+use Generator;
 use RuntimeException;
 use org\bovigo\vfs\vfsStream;
 use org\bovigo\vfs\vfsStreamDirectory;
 use PHPUnit\Framework\TestCase;
 use PHPUnit\Framework\Attributes\CoversClass;
-use Zenigata\Utility\Config\Loader;
+use Zenigata\Utility\Helper\ConfigLoader;
 
 use function sprintf;
 use function var_export;
 
 /**
- * Unit test for {@see Loader} utility.
+ * Unit test for {@see Zenigata\Utility\Helper\ConfigLoader} utility.
  *
  * Covered cases:
  * 
  * - Load configuration from single or multiple files.
- * - Support for grouped configurations using labels.
  * - Provide lazy loading of configuration data.
  * - Throw when label does not exist.
  * - Throw when file does not exist or is not readable.
  */
-#[CoversClass(Loader::class)]
-final class LoaderTest extends TestCase
+#[CoversClass(ConfigLoader::class)]
+final class ConfigLoaderTest extends TestCase
 {
     private vfsStreamDirectory $root;
 
@@ -43,9 +43,9 @@ final class LoaderTest extends TestCase
     protected function setUp(): void
     {
         $this->root = vfsStream::setup('config', null, [
-            'db.php'     => $this->php(['db' => 'mysql']),
+            'db.php'     => $this->php(['db'    => 'mysql']),
             'cache.php'  => $this->php(['cache' => 'redis']),
-            'app.php'    => $this->php(['app' => 'web']),
+            'app.php'    => $this->php(['app'   => 'web']),
             'unreadable' => [
                 'secret.php' => $this->php(['secret' => 'hidden']),
             ],
@@ -64,68 +64,58 @@ final class LoaderTest extends TestCase
 
     public function testLoadSingleFile(): void
     {
-        $loader = new Loader([
+        $iterable = ConfigLoader::load([
             $this->files['db']
         ]);
-        
-        $result = $loader->load();
-        $values = $result->toArray();
+
+        $values = $this->resolveGenerator($iterable);
 
         $this->assertCount(1, $values);
         $this->assertSame(['db' => 'mysql'], $values[0]);
     }
 
-    public function testLoadFilesWithLabels(): void
+    public function testLoadMultipleFiles(): void
     {
-        $loader = new Loader([
-            'config' => [
-                $this->files['db'],
-                $this->files['cache']
-            ]
+        $iterable = ConfigLoader::load([
+            $this->files['db'],
+            $this->files['cache']
         ]);
 
-        $result = $loader->load('config');
-        $values = $result->toArray();
+        $values = $this->resolveGenerator($iterable);
 
         $this->assertCount(2, $values);
         $this->assertSame(['db' => 'mysql'], $values[0]);
         $this->assertSame(['cache' => 'redis'], $values[1]);
     }
 
-    public function testThrowIfLabelDoesNotExist(): void
-    {
-        $loader = new Loader([
-            'config' => [$this->files['db']]
-        ]);
-
-        $this->expectException(RuntimeException::class);
-        $this->expectExceptionMessage('No entries found for label: missing');
-
-        $loader->load('missing');
-    }
-
     public function testThrowIfFileDoesNotExist(): void
     {
-        $loader = new Loader([
+        $iterable = ConfigLoader::load([
             vfsStream::url('root/missing.php')
         ]);
+        
+        // Verify lazyness
+        $this->assertInstanceOf(Generator::class, $iterable);
 
         $this->expectException(RuntimeException::class);
         $this->expectExceptionMessage('Invalid or unreadable file');
 
-        $loader->load()->toArray();
+        $this->resolveGenerator($iterable);
     }
 
     public function testThrowIfFileNotReadable(): void
     {
-        $loader = new Loader([
+        $iterable = ConfigLoader::load([
             $this->files['secret']
         ]);
 
+        // Verify lazyness
+        $this->assertInstanceOf(Generator::class, $iterable);
+
         $this->expectException(RuntimeException::class);
         $this->expectExceptionMessage('Invalid or unreadable file');
-
-        $loader->load()->toArray();
+        
+        $this->resolveGenerator($iterable);
     }
 
     /**
@@ -134,5 +124,13 @@ final class LoaderTest extends TestCase
     private function php(mixed $value): string
     {
         return sprintf('<?php return %s;', var_export($value, return: true));
+    }
+
+    /**
+     * Returns the iterable as an array. 
+     */
+    private function resolveGenerator(Generator $generator): array
+    {
+        return iterator_to_array($generator, true);
     }
 }
