@@ -7,13 +7,13 @@ namespace Zenigata\Utility\Test\Unit\Helper;
 use RuntimeException;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\TestCase;
-use Zenigata\Utility\Helper\ReflectionHelper;
+use Zenigata\Utility\Helper\ReflectionResolver;
 use Zenigata\Utility\Test\AbstractClass;
 use Zenigata\Utility\Test\InstantiableClass;
 use Zenigata\Utility\Test\NonInstantiableClass;
 
 /**
- * Unit test for {@see ReflectionHelper} utility.
+ * Unit test for {@see Zenigata\Utility\Helper\ReflectionResolver} utility.
  *
  * Covered cases:
  *
@@ -23,44 +23,44 @@ use Zenigata\Utility\Test\NonInstantiableClass;
  * - Throws an exception when the class is abstract or not instantiable.
  * - Throws an exception when the class has required constructor parameters.
  */
-#[CoversClass(ReflectionHelper::class)]
-final class ReflectionHelperTest extends TestCase
+#[CoversClass(ReflectionResolver::class)]
+final class ReflectionResolverTest extends TestCase
 {
-    public function testInstantiatesClassWithoutConstructor(): void
+    public function testResolveClassWithoutConstructor(): void
     {
-        $instance = ReflectionHelper::instantiate(InstantiableClass::class);
+        $instance = ReflectionResolver::resolve(InstantiableClass::class);
 
         $this->assertInstanceOf(InstantiableClass::class, $instance);
     }
 
-    public function testInstantiatesClassWithEmptyConstructor(): void
+    public function testResolveClassWithEmptyConstructor(): void
     {
-        $instance = ReflectionHelper::instantiate(InstantiableClass::class);
+        $instance = ReflectionResolver::resolve(InstantiableClass::class);
 
         $this->assertInstanceOf(InstantiableClass::class, $instance);
     }
 
-    public function testThrowsIfClassDoesNotExist(): void
+    public function testThrowIfClassDoesNotExist(): void
     {
         $this->expectException(RuntimeException::class);
-        $this->expectExceptionMessage("Cannot instantiate 'NonExistentClass': class not found.");
+        $this->expectExceptionMessage("Cannot resolve 'NonExistentClass': class not found.");
 
-        ReflectionHelper::instantiate('NonExistentClass');
+        ReflectionResolver::resolve('NonExistentClass');
     }
 
-    public function testThrowsIfClassIsAbstract(): void
+    public function testThrowIfClassIsAbstract(): void
     {
         $this->expectException(RuntimeException::class);
         $this->expectExceptionMessageMatches("/is not instantiable/");
 
-        ReflectionHelper::instantiate(AbstractClass::class);
+        ReflectionResolver::resolve(AbstractClass::class);
     }
 
-    public function testThrowsIfConstructorRequiresParameters(): void
+    public function testThrowIfConstructorRequiresParameters(): void
     {
         $this->expectException(RuntimeException::class);
         $this->expectExceptionMessage('constructor defines 1 required parameter(s).');
 
-        ReflectionHelper::instantiate(NonInstantiableClass::class);
+        ReflectionResolver::resolve(NonInstantiableClass::class);
     }
 }
