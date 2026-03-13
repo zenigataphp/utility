@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Zenigata\Utility\Test\Unit\Psr;
+namespace Zenigata\Utility\Test\Unit\Testing;
 
 use Nyholm\Psr7\Response;
 use Nyholm\Psr7\ServerRequest;
@@ -11,11 +11,11 @@ use PHPUnit\Framework\Attributes\CoversClass;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\MiddlewareInterface;
-use Zenigata\Utility\Psr\FakeMiddleware;
-use Zenigata\Utility\Psr\FakeRequestHandler;
+use Zenigata\Utility\Testing\FakeMiddleware;
+use Zenigata\Utility\Testing\FakeRequestHandler;
 
 /**
- * Unit test for {@see FakeMiddleware}.
+ * Unit test for {@see Zenigata\Utility\Testing\FakeMiddleware}.
  * 
  * Covered cases:
  *

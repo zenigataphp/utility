@@ -2,22 +2,22 @@
 
 declare(strict_types=1);
 
-namespace Zenigata\Utility\Test\Unit\Psr;
+namespace Zenigata\Utility\Test\Unit\Testing;
 
 use LogicException;
 use PHPUnit\Framework\TestCase;
 use PHPUnit\Framework\Attributes\CoversClass;
 use Psr\Container\NotFoundExceptionInterface;
-use Zenigata\Utility\Psr\FakeContainer;
+use Zenigata\Utility\Testing\FakeContainer;
 
 /**
- * Unit test for {@see FakeContainer}.
+ * Unit test for {@see Zenigata\Utility\Testing\FakeContainer}.
  * 
  * Covered cases:
  *
  * - Default state.
  * - Return stored services when present.
- * - Throw a {@see NotFoundExceptionInterface} when a service is missing.
+ * - Throw a {@see Psr\Container\NotFoundExceptionInterface} when a service is missing.
  * - Throw if initialized injecting a non associative array of entries.
  * - Correctly handle `null` as a stored value.
  * - Has and set methods.

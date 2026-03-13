@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Zenigata\Utility\Psr;
+namespace Zenigata\Utility\Testing;
 
 use Exception;
 use LogicException;
@@ -20,29 +20,21 @@ use function sprintf;
 class FakeContainer implements ContainerInterface
 {
     /**
-     * Stack of entries, stored as key-value map of identifiers to services.
-     * 
-     * @var array<string,mixed>
-     */
-    private array $entries = [];
-
-    /**
      * Creates a new fake container instance.
      *
      * @param array<string,mixed> $entries Associative array mapping identifiers to services.
      * 
      * @throws LogicException If entries are not set as associative array.
      */
-    public function __construct(array $entries = [])
-    {
-        if (!empty($entries) && array_is_list($entries)) {
+    public function __construct(
+        private array $entries = []
+    ) {
+        if ($this->entries !== [] && array_is_list($this->entries)) {
             throw new LogicException(sprintf(
                 "Class '%s' requires an associative array of entries.",
                 static::class
             ));
         }
-
-        $this->entries = $entries;
     }
 
     /**
@@ -70,8 +62,6 @@ class FakeContainer implements ContainerInterface
      *
      * @param string $id
      * @param mixed  $value
-     * 
-     * @return void
      */
     public function set(string $id, mixed $value): void
     {

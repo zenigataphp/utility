@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Zenigata\Utility\Psr;
+namespace Zenigata\Utility\Testing;
 
 use Stringable;
 use Psr\Log\AbstractLogger;
@@ -21,9 +21,9 @@ class FakeLogger extends AbstractLogger
     /**
      * Stack of collected logs, stored as formatted strings.
      *
-     * @var string[]
+     * @var list<string>
      */
-    public array $messages = [];
+    private array $messages = [];
 
     /**
      * Simulates logging a message.
@@ -31,8 +31,6 @@ class FakeLogger extends AbstractLogger
      * @param mixed             $level   Log level (e.g "info", "error").
      * @param string|Stringable $message The log message.
      * @param array             $context Additional context data for the log entry.
-     * 
-     * @return void
      */
     public function log($level, string|Stringable $message, array $context = []): void
     {
@@ -47,7 +45,7 @@ class FakeLogger extends AbstractLogger
     /**
      * Returns the logged messages.
      * 
-     * @var string[]
+     * @var list<string>
      */
     public function all(): array
     {

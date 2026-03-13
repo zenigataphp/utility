@@ -2,15 +2,15 @@
 
 declare(strict_types=1);
 
-namespace Zenigata\Utility\Test\Unit\Psr;
+namespace Zenigata\Utility\Test\Unit\Testing;
 
 use Stringable;
 use PHPUnit\Framework\TestCase;
 use PHPUnit\Framework\Attributes\CoversClass;
-use Zenigata\Utility\Psr\FakeLogger;
+use Zenigata\Utility\Testing\FakeLogger;
 
 /**
- * Unit test for {@see FakeLogger}.
+ * Unit test for {@see Zenigata\Utility\Testing\FakeLogger}.
  * 
  * Covered cases:
  *
