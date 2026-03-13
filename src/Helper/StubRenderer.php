@@ -19,6 +19,51 @@ use function str_replace;
 /**
  * Generates files from stub templates, replacing placeholders with provided values.
  * It also ensures that the destination directory exists before writing.
+ * 
+ * Example:
+ * 
+ * ```php
+ * // Stub file: stubs/Class.stub
+ * 
+ * <?php
+ * 
+ * namespace {{namespace}};
+ * 
+ * class {{class}}
+ * {
+ *     public function hello(): string
+ *     {
+ *         return "Hello World!";
+ *     }
+ * }
+ * 
+ * // Render stub replacing placeholders with given values
+ * 
+ * use Zenigata\Utility\Helper\StubRenderer;
+ * 
+ * StubRenderer::render(
+ *     stub:         __DIR__ . '/stubs/Class.stub',
+ *     destination:  __DIR__ . '/src/MyClass.php',
+ *     placeholders: [
+ *         '{{namespace}}' => 'Example',
+ *         '{{class}}'     => 'MyClass',
+ *     ]
+ * );
+ * 
+ * // Output file: src/MyClass.php
+ * 
+ * <?php
+ * 
+ * namespace Example;
+ * 
+ * class MyClass
+ * {
+ *     public function hello(): string
+ *     {
+ *         return "Hello from MyClass!";
+ *     }
+ * }
+ * ```
  */
 class StubRenderer
 {
@@ -34,7 +79,6 @@ class StubRenderer
      * @param string $destination  The path where the generated file will be saved.
      * @param array  $placeholders An associative array of placeholders and their replacements.
      * 
-     * @return void
      * @throws RuntimeException If the stub file is missing, unreadable, or the output file cannot be written.
      */
     public static function render(string $stub, string $destination, array $placeholders = []): void
@@ -63,7 +107,11 @@ class StubRenderer
      */
     private static function replacePlaceholders(string $content, array $replacements): string
     {
-        return str_replace(array_keys($replacements), array_values($replacements), $content);
+        return str_replace(
+            array_keys($replacements),
+            array_values($replacements),
+            $content
+        );
     }
 
     /**
@@ -85,6 +133,7 @@ class StubRenderer
      */
     private static function directoryExists(string $path): bool
     {
-        return is_dir($path) && is_readable($path);
+        return is_dir($path)
+            && is_readable($path);
     }
 }

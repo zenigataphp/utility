@@ -10,6 +10,37 @@ use Psr\SimpleCache\CacheInterface;
 /**
  * Provides a unified static API for both PSR-6 and PSR-16 cache pools.
  * Operates on the cache instance passed to each method.
+ * 
+ * Example: 
+ * 
+ * ```php
+ * use Psr\Cache\CacheItemPoolInterface;    // PSR-6
+ * use Psr\SimpleCache\CacheInterface;      // PSR-16
+ * use Zenigata\Utility\Helper\CacheHelper;
+ * 
+ * // $cache implements CacheItemPoolInterface or CacheInterface
+ * 
+ * // Using PSR-6
+ * $item = $cache->getItem('foo');
+ * $value = $item->isHit() ? $item->get() : null;
+ * 
+ * // Using PSR-16
+ * $value = $cache->get('foo', null);
+ * 
+ * // Using CacheHelper: same code works for both
+ * $value = CacheHelper::getItem($cache, 'foo');
+ * 
+ * // Using PSR-6
+ * $item = $cache->getItem('foo');
+ * $item->set('bar')->expiresAfter(3600);
+ * $cache->save($item);
+ * 
+ * // Using PSR-16
+ * $cache->set('foo', 'bar', 3600);
+ * 
+ * // Using CacheHelper
+ * CacheHelper::setItem($cache, 'foo', 'bar', 3600);
+ * ```
  */
 class CacheHelper
 {
@@ -44,8 +75,6 @@ class CacheHelper
      * @param string                                $key   Cache key.
      * @param mixed                                 $value The value to store.
      * @param int|null                              $ttl   Optional TTL in seconds.
-     *
-     * @return void
      */
     public static function setItem(
         CacheItemPoolInterface|CacheInterface $cache,
@@ -73,8 +102,6 @@ class CacheHelper
      *
      * @param CacheItemPoolInterface|CacheInterface $cache The cache instance.
      * @param string                                $key   Cache key.
-     *
-     * @return void
      */
     public static function deleteItem(CacheItemPoolInterface|CacheInterface $cache, string $key): void
     {
@@ -107,11 +134,11 @@ class CacheHelper
      * Retrieves multiple values from the cache.
      *
      * @param CacheItemPoolInterface|CacheInterface $cache The cache instance.
-     * @param iterable                              $keys  List of keys to retrieve.
+     * @param list<string>                          $keys  List of keys to retrieve.
      *
      * @return array<string,mixed> Map of key => value (missing keys return null).
      */
-    public static function getItems(CacheItemPoolInterface|CacheInterface $cache, iterable $keys): array
+    public static function getItems(CacheItemPoolInterface|CacheInterface $cache, array $keys): array
     {
         if ($cache instanceof CacheInterface) {
             return $cache->getMultiple($keys, null);
@@ -131,14 +158,12 @@ class CacheHelper
      * Stores multiple values in the cache.
      *
      * @param CacheItemPoolInterface|CacheInterface $cache  The cache instance.
-     * @param iterable<string,mixed>                $values Key-value pairs to store.
+     * @param array<string,mixed>                   $values Key-value pairs to store.
      * @param int|null                              $ttl    Optional TTL in seconds.
-     *
-     * @return void
      */
     public static function setItems(
         CacheItemPoolInterface|CacheInterface $cache,
-        iterable $values,
+        array $values,
         ?int $ttl = null
     ): void {
         if ($cache instanceof CacheInterface) {
@@ -162,11 +187,9 @@ class CacheHelper
      * Deletes multiple values from the cache.
      *
      * @param CacheItemPoolInterface|CacheInterface $cache The cache instance.
-     * @param iterable<string>                      $keys  Keys to delete.
-     *
-     * @return void
+     * @param list<string>                          $keys  Keys to delete.
      */
-    public static function deleteItems(CacheItemPoolInterface|CacheInterface $cache, iterable $keys): void
+    public static function deleteItems(CacheItemPoolInterface|CacheInterface $cache, array $keys): void
     {
         if ($cache instanceof CacheInterface) {
             $cache->deleteMultiple($keys);
@@ -182,8 +205,6 @@ class CacheHelper
      * Clears the entire cache.
      *
      * @param CacheItemPoolInterface|CacheInterface $cache The cache instance.
-     *
-     * @return void
      */
     public static function clear(CacheItemPoolInterface|CacheInterface $cache): void
     {

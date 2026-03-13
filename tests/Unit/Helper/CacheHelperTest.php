@@ -13,14 +13,14 @@ use Symfony\Component\Cache\Psr16Cache;
 use Zenigata\Utility\Helper\CacheHelper;
 
 /**
- * Unit test for {@see CacheHelper} utility.
+ * Unit test for {@see Zenigata\Utility\Helper\CacheHelper} utility.
  *
  * Covered cases:
  * 
  * - Read, write, and delete single cache items.
  * - Null returned if key does not exist.
  * - TTL support when setting cache items.
- * - Checking existence with {@see CacheHelper::hasItem()}.
+ * - Checking existence of a cache item.
  * - Bulk operations: set, get, delete multiple items.
  * - Clear the entire cache.
  * - Support for both PSR-6 and PSR-16 backends.

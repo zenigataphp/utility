@@ -3,13 +3,9 @@
 > ⚠️ This project is in an early development stage. Feedback and contributions are welcome!
 
 Lightweight collection of PHP utility classes to simplify common development tasks.
-Currently includes helpers for **cache interaction**, **container resolution**, and **stub file generation**.
 
-## Features
-
-- Unified API for [PSR-6](https://www.php-fig.org/psr/psr-6/#interfaces) and [PSR-16](https://www.php-fig.org/psr/psr-16/#interfaces) interfaces.
-- Simple service resolution with optional **type validation** from a [PSR-11](https://www.php-fig.org/psr/psr-11/#3-interfaces) container.
-- Stub file generation with **token replacement** and safe directory handling.
+The library provides small, focused helpers and traits that reduce boilerplate when working with **PSR standards**, configuration files, reflection, and more.
+Each component is designed to be **framework-agnostic**, minimal, and easy to integrate into any PHP project.
 
 ## Requirements
 
@@ -22,125 +18,34 @@ Currently includes helpers for **cache interaction**, **container resolution**, 
 composer require zenigata/utility
 ```
 
-## Usage
+## Overview
 
-### `CacheHelper`
+### Awareness
 
-Utility for interacting with both **PSR-6** and **PSR-16** caches with a unified API.
+Traits that provide **awareness for common dependencies**, allowing classes to receive services such as containers, factories, or debug state without requiring dependency injection.
 
-It hides the differences between the two standards, so you can use the **same methods** regardless of the underlying cache implementation.
+- [`ContainerAwareTrait`](./src/Awareness/ContainerAwareTrait.php) provides access to a **PSR-11 container** and helper methods for retrieving services.
+- [`DebugAwareTrait`](./src/Awareness/DebugAwareTrait.php) adds a configurable **debug flag** to enable or disable development features.
+- [`ResponseFactoryAwareTrait`](./src/Awareness/ResponseFactoryAwareTrait.php) provides access to a **PSR-17 response factory** for creating HTTP responses.
+- [`StreamFactoryAwareTrait`](./src/Awareness/StreamFactoryAwareTrait.php) provides access to a **PSR-17 stream factory** for creating HTTP streams.
 
-```php
-use Psr\Cache\CacheItemPoolInterface; // PSR-6
-use Psr\SimpleCache\CacheInterface;   // PSR-16
-use Zenigata\Utility\CacheHelper;
+### Helper
 
-// $cache implements CacheItemPoolInterface or CacheInterface
+Collection of small utilities that simplify common tasks such as configuration loading, caching interoperability, file generation, and more.
 
-// With PSR-6
-$item = $cache->getItem('foo');
-$value = $item->isHit() ? $item->get() : null;
+- [`CacheHelper`](./src/Helper/CacheHelper.php) for interacting with both **PSR-6** and **PSR-16** caches with a unified API. It hides the differences between the two standards, so you can use the **same methods** regardless of the underlying cache implementation.
+- [`ConfigLoader`](./src/Helper/ConfigLoader.php) for lazily loading PHP configuration files using **generators**, ensuring minimal memory usage when working with multiple config files.
+- [`ReflectionResolver`](./src/Helper/ReflectionResolver.php) for instantiating classes with empty constructors using **PHP reflection**, useful when no **dependency injection container** is available.
+- [`StubRenderer`](./src/Helper/StubRenderer.php) for generating files from **stub templates** with placeholder replacement and automatic directory creation.
 
-// With PSR-16
-$value = $cache->get('foo', null);
+### Testing
 
-// With CacheHelper: same code works for both
-$value = CacheHelper::getItem($cache, 'foo');
+Simple **test doubles** designed to simplify unit testing when full implementations are unnecessary.
 
-// With PSR-6
-$item = $cache->getItem('foo');
-$item->set('bar')->expiresAfter(3600);
-$cache->save($item);
-
-// With PSR-16
-$cache->set('foo', 'bar', 3600);
-
-// With CacheHelper
-CacheHelper::setItem($cache, 'foo', 'bar', 3600);
-```
-
-Supports single and multiple operations:
-
-- `getItem`, `setItem`, `deleteItem`, `hasItem`
-- `getItems`, `setItems`, `deleteItems`, `clear`
-
-### `ReflectionHelper`
-
-A **lightweight utility** for instantiating classes with empty constructors using PHP reflection.
-
-Useful when no **dependency injection container** is available — for example in low-level bootstrap logic or test utilities.
-
-```php
-use Zenigata\Utility\ReflectionHelper;
-
-final class MyService
-{
-    public function __construct() {}
-}
-
-$instance = ReflectionHelper::instantiate(MyService::class);
-
-var_dump($instance instanceof MyService); // true
-```
-
-Provides clear, **developer-friendly error messages** for all failure cases:
-
-- `"Cannot instantiate 'Foo': class not found."`
-- `"Cannot instantiate 'Foo': class is not instantiable. Ensure the target is a concrete class."`
-- `"Cannot instantiate 'Foo': constructor defines 2 required parameter(s)."`
-
-### `StubRenderer`
-
-Utility for generating files from **stub templates** with placeholder replacement and automatic directory creation.
-
-```php
-use Zenigata\Utility\StubRenderer;
-
-/*
-Stub file: stubs/Class.stub
-
-<?php
-
-namespace {{namespace}};
-
-class {{class}}
-{
-    public function hello(): string
-    {
-        return "Hello World!";
-    }
-}
-*/
-
-StubRenderer::render(
-    stub:         __DIR__ . '/stubs/Class.stub',
-    destination:  __DIR__ . '/src/MyClass.php',
-    placeholders: [
-        '{{namespace}}' => 'Example',
-        '{{class}}'     => 'MyClass',
-    ]
-);
-
-/*
-Resulting file: src/MyClass.php
-
-<?php
-
-namespace Example;
-
-class MyClass
-{
-    public function hello(): string
-    {
-        return "Hello from MyClass!";
-    }
-}
-*/
-```
-
-- Replaces placeholders (e.g. `{{namespace}}`, `{{class}}`) with given values.
-- Ensures the destination directory exists.
-- Throws a `RuntimeException` if the stub cannot be read or the file cannot be written.
+- [`FakeContainer`](./src/Testing/FakeContainer.php): in-memory implementation of **PSR-11** `ContainerInterface`, useful for testing container-aware classes and manually registering dependencies.
+- [`FakeLogger`](./src/Testing/FakeLogger.php): lightweight **PSR-3 logger** that records log messages in memory, allowing tests to inspect and assert logged output.
+- [`FakeMiddleware`](./src/Testing/FakeMiddleware.php): configurable **PSR-15 middleware** that can optionally return a predefined response or execute a callback during processing, making it easy to test middleware pipelines.
+- [`FakeRequestHandler`](./src/Testing/FakeRequestHandler.php): simple **PSR-15 request handler** returning a predefined response, with optional callback execution to observe request handling during tests.
 
 ## Contributing
 

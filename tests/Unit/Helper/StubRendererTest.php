@@ -14,7 +14,7 @@ use Zenigata\Utility\Helper\StubRenderer;
 use function file_get_contents;
 
 /**
- * Unit test for {@see StubRenderer} utility.
+ * Unit test for {@see Zenigata\Utility\Helper\StubRenderer} utility.
  * 
  * Covered cases:
  *
